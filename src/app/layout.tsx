@@ -17,7 +17,22 @@ const geistFont = Manrope({
 
 export const metadata: Metadata = {
 	title: "Mariage de Melissa et Théo",
-	description: "Mariage de Melissa et Théo",
+	description: "Rendez-vous au mariage de Melissa et Théo",
+	openGraph: {
+		title: "Mariage de Melissa et Théo",
+		description: "Rendez-vous au mariage de Melissa et Théo",
+		url: "https://melissa-theo.fr",
+		siteName: "Mariage de Melissa et Théo",
+		locale: "fr_FR",
+		type: "website",
+		images: ["/images/meta.png"],
+	},
+	twitter: {
+		card: "summary_large_image",
+		title: "Mariage de Melissa et Théo",
+		description: "Rendez-vous au mariage de Melissa et Théo",
+		images: ["/images/meta.png"], // full URL required
+	},
 	robots: {
 		index: false,
 		follow: false,
