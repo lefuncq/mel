@@ -12,20 +12,20 @@ import {
 } from "@/components/ui/navigation-menu";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
 
-const scrollToSection = (id: string) => {
-	const el = document.getElementById(id);
-	if (!el) return;
-
-	const headerHeight = 0; // adjust for your sticky navbar height
-	const y = el.getBoundingClientRect().top + window.scrollY - headerHeight;
-
-	window.scrollTo({ top: y, behavior: "smooth" });
+const scrollToSection = (section: string) => {
+	window.scrollTo({
+		top: document.getElementById(section)?.offsetTop,
+		behavior: "smooth",
+	});
 };
 
 function Navbar() {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isMuted, setIsMuted] = useState(false);
+	const pathname = usePathname();
+	const isPhotos = pathname === "/photos";
 
 	// lock/unlock scroll
 	useEffect(() => {
@@ -149,10 +149,9 @@ function Navbar() {
 								<NavigationMenuLink
 									onSelect={() => {
 										setIsOpen(false);
-										scrollToSection("mairie");
+										scrollToSection("home");
 									}}
-									href="/"
-									className="flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
+									className="cursor-pointer flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
 								>
 									<Flower className="size-7 text-foreground stroke-1" />
 									<span className="leading-[20px]">Accueil</span>
@@ -171,8 +170,7 @@ function Navbar() {
 										setIsOpen(false);
 										scrollToSection("mairie");
 									}}
-									href="/"
-									className="flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
+									className="cursor-pointer flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
 								>
 									<Flower className="size-7 text-foreground stroke-1" />
 									<span className="leading-[20px]">Mairie</span>
@@ -191,7 +189,7 @@ function Navbar() {
 										setIsOpen(false);
 										scrollToSection("welcome-party");
 									}}
-									className="flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
+									className="cursor-pointer flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
 								>
 									<Flower className="size-7 text-foreground stroke-1" />
 									<span className="leading-[15px]">Welcome Party</span>
@@ -210,8 +208,7 @@ function Navbar() {
 										setIsOpen(false);
 										scrollToSection("soiree");
 									}}
-									href="/"
-									className="flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
+									className="cursor-pointer flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
 								>
 									<Flower className="size-7 text-foreground stroke-1" />
 									<span className="leading-[15px]">Soirée</span>
@@ -230,8 +227,7 @@ function Navbar() {
 										setIsOpen(false);
 										scrollToSection("sejour");
 									}}
-									href="/"
-									className="flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
+									className="cursor-pointer flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
 								>
 									<Flower className="size-7 text-foreground stroke-1" />
 									<span className="leading-[15px]">Votre Séjour</span>
@@ -250,8 +246,7 @@ function Navbar() {
 										setIsOpen(false);
 										scrollToSection("rsvp");
 									}}
-									href="/"
-									className="flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
+									className="cursor-pointer flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
 								>
 									<Flower className="size-7 text-foreground stroke-1" />
 									<span className="leading-[15px]">RSVP</span>
@@ -268,9 +263,9 @@ function Navbar() {
 								<NavigationMenuLink
 									onSelect={() => {
 										setIsOpen(false);
+										scrollToSection("photos");
 									}}
-									href="/photos"
-									className="flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
+									className="cursor-pointer flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
 								>
 									<Flower className="size-7 text-foreground stroke-1" />
 									<span className="leading-[15px]">Gallerie Photos</span>
