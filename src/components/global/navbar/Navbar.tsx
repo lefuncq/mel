@@ -151,6 +151,7 @@ function Navbar() {
 										setIsOpen(false);
 										scrollToSection("mairie");
 									}}
+									href="/"
 									className="flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
 								>
 									<Flower className="size-7 text-foreground stroke-1" />
@@ -170,6 +171,7 @@ function Navbar() {
 										setIsOpen(false);
 										scrollToSection("mairie");
 									}}
+									href="/"
 									className="flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
 								>
 									<Flower className="size-7 text-foreground stroke-1" />
@@ -208,6 +210,7 @@ function Navbar() {
 										setIsOpen(false);
 										scrollToSection("soiree");
 									}}
+									href="/"
 									className="flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
 								>
 									<Flower className="size-7 text-foreground stroke-1" />
@@ -227,6 +230,7 @@ function Navbar() {
 										setIsOpen(false);
 										scrollToSection("sejour");
 									}}
+									href="/"
 									className="flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
 								>
 									<Flower className="size-7 text-foreground stroke-1" />
@@ -246,6 +250,7 @@ function Navbar() {
 										setIsOpen(false);
 										scrollToSection("rsvp");
 									}}
+									href="/"
 									className="flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
 								>
 									<Flower className="size-7 text-foreground stroke-1" />

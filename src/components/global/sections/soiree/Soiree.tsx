@@ -28,7 +28,7 @@ export default function Soiree() {
 				</h4>
 			</div>
 			<div className="flex items-center justify-center w-full">
-				<div className="w-8/12 max-w-96 aspect-square rounded-full border border-soiree overflow-hidden flex items-center justify-center">
+				<div className="w-8/12 max-w-96 aspect-square rounded-full border border-foreground overflow-hidden flex items-center justify-center">
 					<img
 						src="/videos/soiree.gif"
 						alt="Soirée"
