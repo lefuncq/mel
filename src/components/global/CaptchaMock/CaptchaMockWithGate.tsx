@@ -89,6 +89,7 @@ export default function CaptchaMockWithGate({
 								if (v) startVerify();
 								else resetAll();
 							}}
+							// @ts-ignore
 							disabled={stage === "loading" || stage === "done"}
 							aria-describedby="robot-check-help"
 						/>
