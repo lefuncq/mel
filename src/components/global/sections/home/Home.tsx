@@ -7,7 +7,7 @@ import { type RefObject } from "react";
 export default function Home({
 	videoRef,
 }: {
-	videoRef: RefObject<HTMLVideoElement> | null;
+	videoRef: RefObject<HTMLVideoElement | null>;
 }) {
 	return (
 		<section
@@ -18,7 +18,7 @@ export default function Home({
 				<div className="h-full md:h-3/4 md:flex-1 md:flex md:items-center md:justify-center">
 					{/** biome-ignore lint/a11y/useMediaCaption: wedding video */}
 					<video
-						ref={videoRef as RefObject<HTMLVideoElement>}
+						ref={videoRef}
 						src="/videos/homecpplus.mp4"
 						playsInline
 						loop
