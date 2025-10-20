@@ -189,9 +189,9 @@ export default function RSVP() {
 							setCaptchaSolved(true);
 						}}
 					/>
-					{/* <Button type="submit" disabled={!captchaSolved}>
+					<Button type="submit" disabled={!captchaSolved}>
 						<ArrowRight className="size-4" /> Envoyer
-					</Button> */}
+					</Button>
 				</form>
 			</div>
 		</section>
