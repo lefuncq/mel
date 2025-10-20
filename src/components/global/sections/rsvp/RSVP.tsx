@@ -92,10 +92,11 @@ export default function RSVP() {
 							<FieldGroup className="gap-4">
 								<Field>
 									<FieldLabel htmlFor="first-name-last-name" ref={ref}>
-										Prénom & Nom
+										Prénom(s) & Nom(s)
 									</FieldLabel>
 									<Input
 										id="first-name-last-name"
+										placeholder="Personne 1, Personne 2, ..."
 										required
 										value={name}
 										onChange={(e) => setName(e.target.value)}
