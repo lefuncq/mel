@@ -121,7 +121,7 @@ export default function RSVP() {
 										min={0}
 										max={10}
 										value={mairieNumber}
-										onChange={(e) => setMairieNumber(Number(e.target.value))}
+										onValueChange={(val) => setMairieNumber(val ?? 0)}
 									/>
 									<FieldDescription>
 										Entrez le nombre de personnes pour la mairie
@@ -138,9 +138,7 @@ export default function RSVP() {
 										min={0}
 										max={10}
 										value={welcomePartyNumber}
-										onChange={(e) =>
-											setWelcomePartyNumber(Number(e.target.value))
-										}
+										onValueChange={(val) => setWelcomePartyNumber(val ?? 0)}
 									/>
 									<FieldDescription>
 										Entrez le nombre de personnes pour la welcome party
@@ -155,7 +153,7 @@ export default function RSVP() {
 										min={0}
 										max={10}
 										value={soireeNumber}
-										onChange={(e) => setSoireeNumber(Number(e.target.value))}
+										onValueChange={(val) => setSoireeNumber(val ?? 0)}
 									/>
 									<FieldDescription>
 										Entrez le nombre de personnes pour la soirée
