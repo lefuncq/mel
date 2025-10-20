@@ -59,7 +59,7 @@ export default function RSVP() {
 			position: "top-center",
 			duration: 5000,
 			icon: <Ampersand className="w-6 h-6" />,
-			description: "Hâte de faire la fête avec nous !",
+			description: "Hâte de faire la fête avec vous !",
 		});
 		const emailBody = `Voici ma réponse au RSVP pour le mariage de Melissa et Théo.\n
 		Nom: ${name}
@@ -188,9 +188,9 @@ export default function RSVP() {
 							setCaptchaSolved(true);
 						}}
 					/>
-					<Button type="submit" disabled={!captchaSolved}>
+					{/* <Button type="submit" disabled={!captchaSolved}>
 						<ArrowRight className="size-4" /> Envoyer
-					</Button>
+					</Button> */}
 				</form>
 			</div>
 		</section>
