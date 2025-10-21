@@ -18,6 +18,7 @@ import { useState } from "react";
 import { useInView } from "react-intersection-observer";
 import { cn } from "@/lib/utils";
 import CaptchaMockWithGate from "../../CaptchaMock/CaptchaMockWithGate";
+import { parseAsBoolean, useQueryState } from "nuqs";
 
 const images = [
 	{
@@ -39,7 +40,9 @@ const images = [
 	{ id: "8", src: "/images/sbci.webp", alt: "Guest", isTarget: false },
 	{ id: "9", src: "/images/rjlm.jpg", alt: "Guest", isTarget: false },
 ];
-export default function RSVP({ isOnlyCouple }: { isOnlyCouple: boolean }) {
+export default function RSVP() {
+	const [isOnlyCouple] = useQueryState("onlyCouple", parseAsBoolean);
+
 	const { ref, inView } = useInView({
 		/* Optional options */
 		triggerOnce: true,

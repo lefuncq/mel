@@ -11,12 +11,10 @@ import Splash from "@/components/global/sections/Splash/Splash";
 import RSVP from "@/components/global/sections/rsvp/RSVP";
 import { cn } from "@/lib/utils";
 import Photos from "@/components/global/sections/photos/Photos";
-import { parseAsBoolean, useQueryState } from "nuqs";
 
 export default function OnePage() {
 	const [showSplash, setShowSplash] = useState(true);
 	const videoRef = useRef<HTMLVideoElement>(null);
-	const [isOnlyCouple] = useQueryState("onlyCouple", parseAsBoolean);
 
 	const handleEnter = () => {
 		window.scrollTo({ top: 0, behavior: "smooth" });
@@ -54,7 +52,7 @@ export default function OnePage() {
 			<WelcomeParty />
 			<Soiree />
 			<Sejour />
-			<RSVP isOnlyCouple={isOnlyCouple ?? false} />
+			<RSVP />
 			<Photos />
 		</main>
 	);
