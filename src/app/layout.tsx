@@ -4,6 +4,7 @@ import { Manrope } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/global/navbar/Navbar";
 import { Toaster } from "sonner";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const harmondFont = localFont({
 	src: "../../public/fonts/Harmond/Harmond-SemiBoldCondensed.otf",
@@ -56,7 +57,7 @@ export default function RootLayout({
 			<body>
 				<Toaster />
 				<Navbar />
-				{children}
+				<NuqsAdapter>{children}</NuqsAdapter>
 			</body>
 		</html>
 	);

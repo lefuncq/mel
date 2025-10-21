@@ -39,7 +39,7 @@ const images = [
 	{ id: "8", src: "/images/sbci.webp", alt: "Guest", isTarget: false },
 	{ id: "9", src: "/images/rjlm.jpg", alt: "Guest", isTarget: false },
 ];
-export default function RSVP() {
+export default function RSVP({ isOnlyCouple }: { isOnlyCouple: boolean }) {
 	const { ref, inView } = useInView({
 		/* Optional options */
 		triggerOnce: true,
@@ -119,7 +119,7 @@ export default function RSVP() {
 										required
 										defaultValue={0}
 										min={0}
-										max={10}
+										max={isOnlyCouple ? 2 : 10}
 										value={mairieNumber}
 										onValueChange={(val) => setMairieNumber(val ?? 0)}
 									/>
@@ -136,7 +136,7 @@ export default function RSVP() {
 										required
 										defaultValue={0}
 										min={0}
-										max={10}
+										max={isOnlyCouple ? 2 : 10}
 										value={welcomePartyNumber}
 										onValueChange={(val) => setWelcomePartyNumber(val ?? 0)}
 									/>
@@ -151,7 +151,7 @@ export default function RSVP() {
 										required
 										defaultValue={0}
 										min={0}
-										max={10}
+										max={isOnlyCouple ? 2 : 10}
 										value={soireeNumber}
 										onValueChange={(val) => setSoireeNumber(val ?? 0)}
 									/>
