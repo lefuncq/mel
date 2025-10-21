@@ -22,10 +22,7 @@ export default function Soiree() {
 				>
 					Soirée
 				</h1>
-				<h4 className="text-3xl mt-2">
-					Le 29 juin 2026
-					<br />à 17h30
-				</h4>
+				<h4 className="text-3xl mt-2">Le 29 juin 2026</h4>
 			</div>
 			<div className="flex items-center justify-center w-full">
 				<div className="w-8/12 max-w-96 aspect-square rounded-full border border-foreground overflow-hidden flex items-center justify-center">
@@ -46,7 +43,12 @@ export default function Soiree() {
 				</div>
 			</div>
 			<div className="flex-1 items-center justify-center text-center">
-				<h3 className="text-2xl">Domaine de la Galinière</h3>
+				<h3 className="text-2xl font-harmond">
+					Houppa: 16h40,
+					<br /> Suivie de la soirée
+				</h3>
+				<br />
+				<h3 className="text-2xl text-soiree">Domaine de la Galinière</h3>
 				<Link
 					href="https://waze.com/ul?q=Domaine+de+la+Galinière"
 					target="_blank"
