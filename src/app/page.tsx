@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { Suspense, useRef, useState } from "react";
 import Home from "@/components/global/sections/home/Home";
 import Mairie from "@/components/global/sections/mairie/Mairie";
 import WelcomeParty from "@/components/global/sections/wp/WelcomeParty";
@@ -52,7 +52,9 @@ export default function OnePage() {
 			<WelcomeParty />
 			<Soiree />
 			<Sejour />
-			<RSVP />
+			<Suspense fallback={<div>Loading...</div>}>
+				<RSVP />
+			</Suspense>
 			<Photos />
 		</main>
 	);
