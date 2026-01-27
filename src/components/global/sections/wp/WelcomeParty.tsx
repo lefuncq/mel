@@ -72,7 +72,9 @@ export default function WelcomeParty() {
 			</div>
 			<div className="flex flex-col items-center justify-center">
 				<h3 className="text-3xl font-harmond text-center">Pool Party/Henné</h3>
-				<h4 className="text-2xl bg-accent inline-block">Thème: Flower Power</h4>
+				<h4 className="text-2xl bg-accent inline-block">
+					Dress Code: Flower Power
+				</h4>
 				<h3 className="text-2xl">Domaine de la Galinière</h3>
 				<Link
 					href="https://waze.com/ul?q=Domaine+de+la+Galinière"
