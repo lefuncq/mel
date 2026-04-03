@@ -42,6 +42,7 @@ const images = [
 ];
 export default function RSVP() {
 	const [isOnlyCouple] = useQueryState("onlyCouple", parseAsBoolean);
+	const [isNotMairie] = useQueryState("nm", parseAsBoolean);
 
 	const { ref, inView } = useInView({
 		/* Optional options */
@@ -115,21 +116,23 @@ export default function RSVP() {
 										onChange={(e) => setAddress(e.target.value)}
 									/>
 								</Field>
-								<Field>
-									<FieldLabel htmlFor="mairie">Mairie</FieldLabel>
-									<NumberInput
-										id="mairie"
-										required
-										defaultValue={0}
-										min={0}
-										max={isOnlyCouple ? 2 : 10}
-										value={mairieNumber}
-										onValueChange={(val) => setMairieNumber(val ?? 0)}
-									/>
-									<FieldDescription>
-										Entrez le nombre de personnes pour la mairie
-									</FieldDescription>
-								</Field>
+								{!isNotMairie && (
+									<Field>
+										<FieldLabel htmlFor="mairie">Mairie</FieldLabel>
+										<NumberInput
+											id="mairie"
+											required
+											defaultValue={0}
+											min={0}
+											max={isOnlyCouple ? 2 : 10}
+											value={mairieNumber}
+											onValueChange={(val) => setMairieNumber(val ?? 0)}
+										/>
+										<FieldDescription>
+											Entrez le nombre de personnes pour la mairie
+										</FieldDescription>
+									</Field>
+								)}
 								<Field>
 									<FieldLabel htmlFor="welcome-party">
 										Welcome Party/Henné

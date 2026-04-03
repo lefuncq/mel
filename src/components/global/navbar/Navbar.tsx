@@ -13,6 +13,7 @@ import {
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { parseAsBoolean, useQueryState } from "nuqs";
 
 const scrollToSection = (section: string) => {
 	window.scrollTo({
@@ -26,6 +27,7 @@ function Navbar() {
 	const [isMuted, setIsMuted] = useState(false);
 	const pathname = usePathname();
 	const isPhotos = pathname === "/photos";
+	const [isNotMairie] = useQueryState("nm", parseAsBoolean);
 
 	// lock/unlock scroll
 	useEffect(() => {
@@ -157,25 +159,27 @@ function Navbar() {
 									<span className="leading-[20px]">Accueil</span>
 								</NavigationMenuLink>
 							</NavigationMenuItem>
-							<NavigationMenuItem
-								className={cn(
-									"transition-all duration-500 ease-out",
-									isOpen
-										? "translate-y-0 opacity-100"
-										: "translate-y-12 opacity-0",
-								)}
-							>
-								<NavigationMenuLink
-									onSelect={() => {
-										setIsOpen(false);
-										scrollToSection("mairie");
-									}}
-									className="cursor-pointer flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
+							{!isNotMairie && (
+								<NavigationMenuItem
+									className={cn(
+										"transition-all duration-500 ease-out",
+										isOpen
+											? "translate-y-0 opacity-100"
+											: "translate-y-12 opacity-0",
+									)}
 								>
-									<Flower className="size-7 text-foreground stroke-1" />
-									<span className="leading-[20px]">Mairie</span>
-								</NavigationMenuLink>
-							</NavigationMenuItem>
+									<NavigationMenuLink
+										onSelect={() => {
+											setIsOpen(false);
+											scrollToSection("mairie");
+										}}
+										className="cursor-pointer flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
+									>
+										<Flower className="size-7 text-foreground stroke-1" />
+										<span className="leading-[20px]">Mairie</span>
+									</NavigationMenuLink>
+								</NavigationMenuItem>
+							)}
 							<NavigationMenuItem
 								className={cn(
 									"transition-all duration-500 ease-out",

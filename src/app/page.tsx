@@ -11,6 +11,7 @@ import Splash from "@/components/global/sections/Splash/Splash";
 import RSVP from "@/components/global/sections/rsvp/RSVP";
 import { cn } from "@/lib/utils";
 import Photos from "@/components/global/sections/photos/Photos";
+import Navbar from "@/components/global/navbar/Navbar";
 
 export default function OnePage() {
 	const [showSplash, setShowSplash] = useState(true);
@@ -35,29 +36,34 @@ export default function OnePage() {
 	};
 
 	return (
-		<main className="flex flex-col items-center md:items-start max-w-screen">
-			<Splash
-				className={cn(
-					"transition-opacity duration-1000 z-50",
-					showSplash ? "opacity-100" : "opacity-0 pointer-events-none",
-				)}
-				onClick={handleEnter}
-			/>
-
-			{/* Video section */}
-			<Home videoRef={videoRef} />
-
-			<Merci />
+		<>
 			<Suspense fallback={<div>Loading...</div>}>
-				<Mairie />
+				<Navbar />
 			</Suspense>
-			<WelcomeParty />
-			<Soiree />
-			<Sejour />
-			<Suspense fallback={<div>Loading...</div>}>
-				<RSVP />
-			</Suspense>
-			<Photos />
-		</main>
+			<main className="flex flex-col items-center md:items-start max-w-screen">
+				<Splash
+					className={cn(
+						"transition-opacity duration-1000 z-50",
+						showSplash ? "opacity-100" : "opacity-0 pointer-events-none",
+					)}
+					onClick={handleEnter}
+				/>
+
+				{/* Video section */}
+				<Home videoRef={videoRef} />
+
+				<Merci />
+				<Suspense fallback={<div>Loading...</div>}>
+					<Mairie />
+				</Suspense>
+				<WelcomeParty />
+				<Soiree />
+				<Sejour />
+				<Suspense fallback={<div>Loading...</div>}>
+					<RSVP />
+				</Suspense>
+				<Photos />
+			</main>
+		</>
 	);
 }
