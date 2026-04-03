@@ -1,4 +1,5 @@
 export default function Photos() {
+	// USE KULULU
 	return (
 		<section
 			id="photos"
@@ -10,4 +11,3 @@ export default function Photos() {
 		</section>
 	);
 }
-("");
