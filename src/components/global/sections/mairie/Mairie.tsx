@@ -3,6 +3,7 @@ import MapPin from "@/components/global/icons/map-pin.svg";
 import Section from "../Section";
 import { useInView } from "react-intersection-observer";
 import { cn } from "@/lib/utils";
+import { parseAsBoolean, useQueryState } from "nuqs";
 
 export default function Mairie() {
 	const { ref, inView } = useInView({
@@ -10,6 +11,11 @@ export default function Mairie() {
 		triggerOnce: true,
 		threshold: 0,
 	});
+	const [isNotMairie] = useQueryState("nm", parseAsBoolean);
+
+	console.log(isNotMairie);
+
+	if (isNotMairie) return null;
 
 	return (
 		<Section id="mairie" className="bg-mairie">
@@ -71,7 +77,7 @@ export default function Mairie() {
 					>
 						<MapPin className="w-4 h-4" />
 						<strong className="leading-[12px]">
-							11 rue Saint James, 92200 Neuilly-sur-Seine
+							73 boulevard du général koening 92200 Neuilly sur Seine
 						</strong>
 					</Link>
 				</div>
