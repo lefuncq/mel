@@ -48,7 +48,9 @@ export default function OnePage() {
 			<Home videoRef={videoRef} />
 
 			<Merci />
-			<Mairie />
+			<Suspense fallback={<div>Loading...</div>}>
+				<Mairie />
+			</Suspense>
 			<WelcomeParty />
 			<Soiree />
 			<Sejour />

@@ -13,8 +13,6 @@ export default function Mairie() {
 	});
 	const [isNotMairie] = useQueryState("nm", parseAsBoolean);
 
-	console.log(isNotMairie);
-
 	if (isNotMairie) return null;
 
 	return (
