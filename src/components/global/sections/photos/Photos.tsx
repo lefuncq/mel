@@ -25,20 +25,11 @@ const PHOTOS_URL = `${SITE_URL}/#photos`;
 const UPLOAD_BATCH = 3; // files uploaded concurrently per batch
 const GALLERY_PAGE = 20; // gallery tiles rendered per "page" (infinite scroll)
 
-// Must mirror the FileRouter limits in api/uploadthing/core.ts. We check them
-// client-side so one oversized file (a long 4K video) doesn't fail its whole
-// batch with a cryptic "Invalid config: FileSizeMismatch" — we skip it cleanly.
-const MAX_IMAGE_BYTES = 256 * 1024 * 1024; // 256 MB
-const MAX_VIDEO_BYTES = 2 * 1024 * 1024 * 1024; // 2 GB
-const VIDEO_EXT_RE = /\.(mp4|mov|m4v|webm|avi|mkv|hevc|3gp|ogg)$/i;
-
-function isVideoFile(file: File): boolean {
-	return file.type.startsWith("video/") || VIDEO_EXT_RE.test(file.name);
-}
-
-function isWithinLimit(file: File): boolean {
-	return file.size <= (isVideoFile(file) ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES);
-}
+// We deliberately DON'T pre-check file size client-side: iOS Safari reports
+// unreliable sizes/types for some files (e.g. videos saved from WhatsApp, handed
+// over as large untyped blobs), which caused false "too large" rejections on
+// some phones. UploadThing validates against the route config; we just isolate
+// failures so one bad file never blocks the rest.
 
 export default function Photos() {
 	const [items, setItems] = useState<GalleryItem[]>([]);
@@ -51,7 +42,9 @@ export default function Photos() {
 	const [zipProgress, setZipProgress] = useState(0);
 	const [visibleCount, setVisibleCount] = useState(GALLERY_PAGE);
 	const inputRef = useRef<HTMLInputElement>(null);
-	const { ref: sentinelRef, inView } = useInView();
+	// rootMargin pre-loads the next page just before the sentinel is reached,
+	// so scrolling stays smooth and never pins on the very last row.
+	const { ref: sentinelRef, inView } = useInView({ rootMargin: "400px" });
 
 	const fetchGallery = useCallback(async () => {
 		try {
@@ -69,66 +62,73 @@ export default function Photos() {
 		fetchGallery();
 	}, [fetchGallery]);
 
-	// Infinite scroll: reveal another page each time the sentinel scrolls into
-	// view. Re-runs as visibleCount grows so it keeps filling until the viewport
-	// is covered or everything is shown — only ~20 tiles mount at a time.
+	// Infinite scroll: reveal one more page each time the sentinel enters view.
+	// Depend only on `inView` (NOT visibleCount) — otherwise each increment
+	// re-runs the effect while the observer is still reporting inView=true,
+	// cascading into loading everything at once.
 	useEffect(() => {
-		if (inView && visibleCount < items.length) {
+		if (inView) {
 			setVisibleCount((c) => Math.min(c + GALLERY_PAGE, items.length));
 		}
-	}, [inView, visibleCount, items.length]);
+	}, [inView, items.length]);
 
 	const handleFiles = async (fileList: FileList | null) => {
 		if (!fileList || fileList.length === 0 || uploading) return;
 		// Reset so selecting the same file again still fires onChange.
 		if (inputRef.current) inputRef.current.value = "";
 
-		// Skip files over the limits so one big video doesn't fail its whole batch.
-		const selected = Array.from(fileList);
-		const files = selected.filter(isWithinLimit);
-		const tooLarge = selected.length - files.length;
-
-		if (files.length === 0) {
-			toast.error(
-				"Fichier(s) trop lourd(s) — rien envoyé. Pour les vidéos longues, envoyez-les nous directement sur WhatsApp 💕",
-			);
-			return;
-		}
-
+		const files = Array.from(fileList);
 		setUploading(true);
 		setUploadTotal(files.length);
 		setUploadDone(0);
 		let failed = 0;
+		let sawSizeError = false;
+
+		const noteError = (e: unknown) => {
+			failed += 1;
+			const msg = e instanceof Error ? e.message : String(e);
+			if (/size|lourd|large|FileSizeMismatch/i.test(msg)) sawSizeError = true;
+		};
 
 		try {
-			// Upload in small batches so memory stays bounded and the UI keeps
-			// updating ("X/N") instead of freezing the phone.
+			// Upload in small batches (bounded memory → no freeze). If a batch
+			// fails, retry its files one by one so a single bad file (e.g. a huge
+			// video) doesn't sink the good ones around it.
 			for (let i = 0; i < files.length; i += UPLOAD_BATCH) {
 				const chunk = files.slice(i, i + UPLOAD_BATCH);
 				try {
 					await uploadFiles("weddingMedia", { files: chunk });
+					setUploadDone((done) => done + chunk.length);
 				} catch {
-					failed += chunk.length;
+					for (const file of chunk) {
+						try {
+							await uploadFiles("weddingMedia", { files: [file] });
+						} catch (e) {
+							noteError(e);
+						} finally {
+							setUploadDone((done) => done + 1);
+						}
+					}
 				}
-				setUploadDone((done) => done + chunk.length);
 			}
 
 			await fetchGallery();
 
 			const added = files.length - failed;
-			if (failed === 0 && tooLarge === 0) {
+			const whatsapp =
+				"Pour les vidéos longues, envoyez-les nous sur WhatsApp 💕";
+			if (failed === 0) {
 				toast.success("Merci ! Vos souvenirs ont été ajoutés 💕");
 			} else if (added > 0) {
-				const parts = [`${added} ajoutée(s)`];
-				if (failed > 0) parts.push(`${failed} échouée(s)`);
-				if (tooLarge > 0) parts.push(`${tooLarge} trop lourde(s)`);
-				let msg = `${parts.join(", ")}.`;
-				if (tooLarge > 0) {
-					msg += " Pour les vidéos longues, envoyez-les nous sur WhatsApp 💕";
-				}
-				toast.warning(msg);
+				toast.warning(
+					`${added} ajoutée(s), ${failed} échouée(s). ${
+						sawSizeError ? whatsapp : "Réessayez les manquantes."
+					}`,
+				);
 			} else {
-				toast.error("L'envoi a échoué. Réessayez.");
+				toast.error(
+					sawSizeError ? `Envoi impossible. ${whatsapp}` : "L'envoi a échoué. Réessayez.",
+				);
 			}
 		} finally {
 			setUploading(false);
