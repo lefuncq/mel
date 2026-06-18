@@ -90,7 +90,7 @@ export default function Photos() {
 
 		if (files.length === 0) {
 			toast.error(
-				"Fichier(s) trop lourd(s) — rien envoyé (max 2 Go par vidéo, 256 Mo par photo).",
+				"Fichier(s) trop lourd(s) — rien envoyé. Pour les vidéos longues, envoyez-les nous directement sur WhatsApp 💕",
 			);
 			return;
 		}
@@ -122,7 +122,11 @@ export default function Photos() {
 				const parts = [`${added} ajoutée(s)`];
 				if (failed > 0) parts.push(`${failed} échouée(s)`);
 				if (tooLarge > 0) parts.push(`${tooLarge} trop lourde(s)`);
-				toast.warning(`${parts.join(", ")}.`);
+				let msg = `${parts.join(", ")}.`;
+				if (tooLarge > 0) {
+					msg += " Pour les vidéos longues, envoyez-les nous sur WhatsApp 💕";
+				}
+				toast.warning(msg);
 			} else {
 				toast.error("L'envoi a échoué. Réessayez.");
 			}
