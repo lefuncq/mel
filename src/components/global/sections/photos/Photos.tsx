@@ -28,8 +28,8 @@ const GALLERY_PAGE = 20; // gallery tiles rendered per "page" (infinite scroll)
 // Must mirror the FileRouter limits in api/uploadthing/core.ts. We check them
 // client-side so one oversized file (a long 4K video) doesn't fail its whole
 // batch with a cryptic "Invalid config: FileSizeMismatch" — we skip it cleanly.
-const MAX_IMAGE_BYTES = 64 * 1024 * 1024; // 64 MB
-const MAX_VIDEO_BYTES = 1024 * 1024 * 1024; // 1 GB
+const MAX_IMAGE_BYTES = 256 * 1024 * 1024; // 256 MB
+const MAX_VIDEO_BYTES = 2 * 1024 * 1024 * 1024; // 2 GB
 const VIDEO_EXT_RE = /\.(mp4|mov|m4v|webm|avi|mkv|hevc|3gp|ogg)$/i;
 
 function isVideoFile(file: File): boolean {
@@ -90,7 +90,7 @@ export default function Photos() {
 
 		if (files.length === 0) {
 			toast.error(
-				"Fichier(s) trop lourd(s) — rien envoyé (max 1 Go par vidéo, 64 Mo par photo).",
+				"Fichier(s) trop lourd(s) — rien envoyé (max 2 Go par vidéo, 256 Mo par photo).",
 			);
 			return;
 		}
