@@ -30,10 +30,21 @@ export async function GET() {
 		);
 	}
 
-	const { files } = await utapi.listFiles({ limit: 500 });
+	// listFiles caps at 500 per call, so page through until we've got everything
+	// (the browser then lazy-loads thumbnails, so rendering ~hundreds is fine).
+	type UTFile = Awaited<ReturnType<typeof utapi.listFiles>>["files"][number];
+	const PAGE_SIZE = 500;
+	const SAFETY_CAP = 5000;
+	const files: UTFile[] = [];
+	for (let offset = 0; offset < SAFETY_CAP; offset += PAGE_SIZE) {
+		const page = await utapi.listFiles({ limit: PAGE_SIZE, offset });
+		files.push(...page.files);
+		if (page.files.length < PAGE_SIZE) break;
+	}
 
 	const data = files
 		.filter((file) => file.status === "Uploaded")
+		.sort((a, b) => b.uploadedAt - a.uploadedAt) // newest first
 		.map((file) => {
 			const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
 			return {
