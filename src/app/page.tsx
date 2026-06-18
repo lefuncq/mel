@@ -59,15 +59,21 @@ export default function OnePage() {
 				<Home videoRef={videoRef} />
 
 				<Merci />
-				<Suspense fallback={<div>Loading...</div>}>
-					<Mairie />
-				</Suspense>
+				{/* Mairie masquée — réactiver en retirant "false &&" */}
+				{false && (
+					<Suspense fallback={<div>Loading...</div>}>
+						<Mairie />
+					</Suspense>
+				)}
 				<WelcomeParty />
 				<Soiree />
 				<Sejour />
-				<Suspense fallback={<div>Loading...</div>}>
-					<RSVP />
-				</Suspense>
+				{/* RSVP masqué — réactiver en retirant "false &&" */}
+				{false && (
+					<Suspense fallback={<div>Loading...</div>}>
+						<RSVP />
+					</Suspense>
+				)}
 				<Photos />
 			</main>
 		</>

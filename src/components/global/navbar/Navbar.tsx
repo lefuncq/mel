@@ -159,7 +159,8 @@ function Navbar() {
 									<span className="leading-[20px]">Accueil</span>
 								</NavigationMenuLink>
 							</NavigationMenuItem>
-							{!isNotMairie && (
+							{/* Mairie masquée — réactiver en retirant "false &&" */}
+							{false && !isNotMairie && (
 								<NavigationMenuItem
 									className={cn(
 										"transition-all duration-500 ease-out",
@@ -237,25 +238,28 @@ function Navbar() {
 									<span className="leading-[15px]">Votre Séjour</span>
 								</NavigationMenuLink>
 							</NavigationMenuItem>
-							<NavigationMenuItem
-								className={cn(
-									"transition-all duration-500 ease-out",
-									isOpen
-										? "translate-y-0 opacity-100"
-										: "translate-y-12 opacity-0",
-								)}
-							>
-								<NavigationMenuLink
-									onSelect={() => {
-										setIsOpen(false);
-										scrollToSection("rsvp");
-									}}
-									className="cursor-pointer flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
+							{/* RSVP masqué — réactiver en retirant "false &&" */}
+							{false && (
+								<NavigationMenuItem
+									className={cn(
+										"transition-all duration-500 ease-out",
+										isOpen
+											? "translate-y-0 opacity-100"
+											: "translate-y-12 opacity-0",
+									)}
 								>
-									<Flower className="size-7 text-foreground stroke-1" />
-									<span className="leading-[15px]">RSVP</span>
-								</NavigationMenuLink>
-							</NavigationMenuItem>
+									<NavigationMenuLink
+										onSelect={() => {
+											setIsOpen(false);
+											scrollToSection("rsvp");
+										}}
+										className="cursor-pointer flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
+									>
+										<Flower className="size-7 text-foreground stroke-1" />
+										<span className="leading-[15px]">RSVP</span>
+									</NavigationMenuLink>
+								</NavigationMenuItem>
+							)}
 							<NavigationMenuItem
 								className={cn(
 									"transition-all duration-500 ease-out",

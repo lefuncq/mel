@@ -14,9 +14,10 @@ type GalleryItem = {
 	type: "image" | "video";
 };
 
-// QR code points guests to this page, where they upload directly.
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://melissa-theo.fr";
-const PHOTOS_URL = `${SITE_URL}/photos`;
+// QR code sends guests to the home page anchored on the gallery section
+// (full site experience + #photos deep-link), where they upload directly.
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://mel-ten.vercel.app";
+const PHOTOS_URL = `${SITE_URL}/#photos`;
 
 // iPhone photos are large; sending 10-20 at once in parallel spikes memory and
 // freezes mobile Safari. We upload the ORIGINALS untouched (no quality loss) in
