@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import { Camera, Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { useUploadThing } from "@/lib/uploadthing";
+import { useInView } from "react-intersection-observer";
+import { uploadFiles } from "@/lib/uploadthing";
 
 type GalleryItem = {
 	key: string;
@@ -17,14 +18,24 @@ type GalleryItem = {
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://melissa-theo.fr";
 const PHOTOS_URL = `${SITE_URL}/photos`;
 
+// iPhone photos are large; sending 10-20 at once in parallel spikes memory and
+// freezes mobile Safari. We upload the ORIGINALS untouched (no quality loss) in
+// small batches so memory stays bounded and the UI keeps updating.
+const UPLOAD_BATCH = 3; // files uploaded concurrently per batch
+const GALLERY_PAGE = 20; // gallery tiles rendered per "page" (infinite scroll)
+
 export default function Photos() {
 	const [items, setItems] = useState<GalleryItem[]>([]);
 	const [loadingGallery, setLoadingGallery] = useState(true);
-	const [progress, setProgress] = useState(0);
+	const [uploading, setUploading] = useState(false);
+	const [uploadTotal, setUploadTotal] = useState(0);
+	const [uploadDone, setUploadDone] = useState(0);
 	const [savingKey, setSavingKey] = useState<string | null>(null);
 	const [zipping, setZipping] = useState(false);
 	const [zipProgress, setZipProgress] = useState(0);
+	const [visibleCount, setVisibleCount] = useState(GALLERY_PAGE);
 	const inputRef = useRef<HTMLInputElement>(null);
+	const { ref: sentinelRef, inView } = useInView();
 
 	const fetchGallery = useCallback(async () => {
 		try {
@@ -42,24 +53,54 @@ export default function Photos() {
 		fetchGallery();
 	}, [fetchGallery]);
 
-	const { startUpload, isUploading } = useUploadThing("weddingMedia", {
-		onClientUploadComplete: () => {
-			toast.success("Merci ! Vos souvenirs ont été ajoutés 💕");
-			setProgress(0);
-			fetchGallery();
-		},
-		onUploadError: (e) => {
-			toast.error(`Échec de l'envoi : ${e.message}`);
-			setProgress(0);
-		},
-		onUploadProgress: (p) => setProgress(p),
-	});
+	// Infinite scroll: reveal another page each time the sentinel scrolls into
+	// view. Re-runs as visibleCount grows so it keeps filling until the viewport
+	// is covered or everything is shown — only ~20 tiles mount at a time.
+	useEffect(() => {
+		if (inView && visibleCount < items.length) {
+			setVisibleCount((c) => Math.min(c + GALLERY_PAGE, items.length));
+		}
+	}, [inView, visibleCount, items.length]);
 
-	const handleFiles = (fileList: FileList | null) => {
-		if (!fileList || fileList.length === 0) return;
-		startUpload(Array.from(fileList));
+	const handleFiles = async (fileList: FileList | null) => {
+		if (!fileList || fileList.length === 0 || uploading) return;
 		// Reset so selecting the same file again still fires onChange.
 		if (inputRef.current) inputRef.current.value = "";
+
+		const files = Array.from(fileList);
+		setUploading(true);
+		setUploadTotal(files.length);
+		setUploadDone(0);
+		let failed = 0;
+
+		try {
+			// Upload in small batches so memory stays bounded and the UI keeps
+			// updating ("X/N") instead of freezing the phone.
+			for (let i = 0; i < files.length; i += UPLOAD_BATCH) {
+				const chunk = files.slice(i, i + UPLOAD_BATCH);
+				try {
+					await uploadFiles("weddingMedia", { files: chunk });
+				} catch {
+					failed += chunk.length;
+				}
+				setUploadDone((done) => done + chunk.length);
+			}
+
+			await fetchGallery();
+			if (failed === 0) {
+				toast.success("Merci ! Vos souvenirs ont été ajoutés 💕");
+			} else if (failed < files.length) {
+				toast.warning(
+					`${files.length - failed} ajoutée(s), ${failed} échouée(s). Réessayez les manquantes.`,
+				);
+			} else {
+				toast.error("L'envoi a échoué. Réessayez.");
+			}
+		} finally {
+			setUploading(false);
+			setUploadTotal(0);
+			setUploadDone(0);
+		}
 	};
 
 	// Save a media file: native share sheet on mobile ("Save to Photos"),
@@ -181,14 +222,14 @@ export default function Photos() {
 					/>
 					<button
 						type="button"
-						disabled={isUploading}
+						disabled={uploading}
 						onClick={() => inputRef.current?.click()}
 						className="font-sans font-medium inline-flex items-center justify-center gap-2 rounded-full bg-foreground text-background px-6 py-3 text-lg transition hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
 					>
-						{isUploading ? (
+						{uploading ? (
 							<>
 								<Loader2 className="w-5 h-5 animate-spin" />
-								Envoi… {progress}%
+								Envoi… {uploadDone}/{uploadTotal}
 							</>
 						) : (
 							<>
@@ -249,7 +290,7 @@ export default function Photos() {
 								</button>
 							</div>
 							<div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-								{items.map((item) => (
+								{items.slice(0, visibleCount).map((item) => (
 									<div
 										key={item.key}
 										className="group relative aspect-square overflow-hidden rounded-xl bg-foreground/5"
@@ -294,6 +335,14 @@ export default function Photos() {
 									</div>
 								))}
 							</div>
+							{visibleCount < items.length && (
+								<div
+									ref={sentinelRef}
+									className="flex items-center justify-center py-6 text-foreground/40"
+								>
+									<Loader2 className="w-5 h-5 animate-spin" />
+								</div>
+							)}
 						</>
 					)}
 				</div>
