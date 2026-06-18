@@ -18,7 +18,13 @@ export default function OnePage() {
 	const videoRef = useRef<HTMLVideoElement>(null);
 
 	const handleEnter = () => {
-		window.scrollTo({ top: 0, behavior: "smooth" });
+		// Deep-link to the gallery (QR / #photos): stay on the Photos section
+		// instead of scrolling back to the top.
+		if (window.location.hash.includes("photos")) {
+			document.getElementById("photos")?.scrollIntoView();
+		} else {
+			window.scrollTo({ top: 0, behavior: "smooth" });
+		}
 		setShowSplash(false);
 
 		const v = videoRef.current;
