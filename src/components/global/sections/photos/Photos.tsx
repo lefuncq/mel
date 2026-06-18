@@ -25,6 +25,21 @@ const PHOTOS_URL = `${SITE_URL}/#photos`;
 const UPLOAD_BATCH = 3; // files uploaded concurrently per batch
 const GALLERY_PAGE = 20; // gallery tiles rendered per "page" (infinite scroll)
 
+// Must mirror the FileRouter limits in api/uploadthing/core.ts. We check them
+// client-side so one oversized file (a long 4K video) doesn't fail its whole
+// batch with a cryptic "Invalid config: FileSizeMismatch" — we skip it cleanly.
+const MAX_IMAGE_BYTES = 64 * 1024 * 1024; // 64 MB
+const MAX_VIDEO_BYTES = 1024 * 1024 * 1024; // 1 GB
+const VIDEO_EXT_RE = /\.(mp4|mov|m4v|webm|avi|mkv|hevc|3gp|ogg)$/i;
+
+function isVideoFile(file: File): boolean {
+	return file.type.startsWith("video/") || VIDEO_EXT_RE.test(file.name);
+}
+
+function isWithinLimit(file: File): boolean {
+	return file.size <= (isVideoFile(file) ? MAX_VIDEO_BYTES : MAX_IMAGE_BYTES);
+}
+
 export default function Photos() {
 	const [items, setItems] = useState<GalleryItem[]>([]);
 	const [loadingGallery, setLoadingGallery] = useState(true);
@@ -68,7 +83,18 @@ export default function Photos() {
 		// Reset so selecting the same file again still fires onChange.
 		if (inputRef.current) inputRef.current.value = "";
 
-		const files = Array.from(fileList);
+		// Skip files over the limits so one big video doesn't fail its whole batch.
+		const selected = Array.from(fileList);
+		const files = selected.filter(isWithinLimit);
+		const tooLarge = selected.length - files.length;
+
+		if (files.length === 0) {
+			toast.error(
+				"Fichier(s) trop lourd(s) — rien envoyé (max 1 Go par vidéo, 64 Mo par photo).",
+			);
+			return;
+		}
+
 		setUploading(true);
 		setUploadTotal(files.length);
 		setUploadDone(0);
@@ -88,12 +114,15 @@ export default function Photos() {
 			}
 
 			await fetchGallery();
-			if (failed === 0) {
+
+			const added = files.length - failed;
+			if (failed === 0 && tooLarge === 0) {
 				toast.success("Merci ! Vos souvenirs ont été ajoutés 💕");
-			} else if (failed < files.length) {
-				toast.warning(
-					`${files.length - failed} ajoutée(s), ${failed} échouée(s). Réessayez les manquantes.`,
-				);
+			} else if (added > 0) {
+				const parts = [`${added} ajoutée(s)`];
+				if (failed > 0) parts.push(`${failed} échouée(s)`);
+				if (tooLarge > 0) parts.push(`${tooLarge} trop lourde(s)`);
+				toast.warning(`${parts.join(", ")}.`);
 			} else {
 				toast.error("L'envoi a échoué. Réessayez.");
 			}

@@ -6,11 +6,11 @@ const f = createUploadthing();
 export const ourFileRouter = {
 	weddingMedia: f({
 		image: {
-			maxFileSize: "32MB",
+			maxFileSize: "64MB",
 			maxFileCount: 30,
 		},
 		video: {
-			maxFileSize: "256MB",
+			maxFileSize: "1GB",
 			maxFileCount: 10,
 		},
 	}).onUploadComplete(async ({ file }) => {
