@@ -85,10 +85,13 @@ export default function Photos() {
 
 	const handleFiles = async (fileList: FileList | null) => {
 		if (!fileList || fileList.length === 0 || uploading) return;
-		// Reset so selecting the same file again still fires onChange.
+
+		// Capture the files BEFORE clearing the input — fileList is a LIVE
+		// reference to input.files, so resetting input.value first empties it
+		// and we'd upload nothing ("Envoi 0/0").
+		const files = Array.from(fileList);
 		if (inputRef.current) inputRef.current.value = "";
 
-		const files = Array.from(fileList);
 		setUploading(true);
 		setUploadTotal(files.length);
 		setUploadDone(0);
