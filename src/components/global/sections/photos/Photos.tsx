@@ -5,7 +5,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { Camera, Download, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { useInView } from "react-intersection-observer";
-import { uploadFiles } from "@/lib/uploadthing";
+import { useUploadThing } from "@/lib/uploadthing";
 
 type GalleryItem = {
 	key: string;
@@ -46,6 +46,17 @@ export default function Photos() {
 	// so scrolling stays smooth and never pins on the very last row.
 	const { ref: sentinelRef, inView } = useInView({ rootMargin: "400px" });
 
+	// Use the hook's startUpload (the mechanism that worked in production) — the
+	// standalone uploadFiles resolved "success" without persisting the file.
+	const sizeErrorRef = useRef(false);
+	const { startUpload } = useUploadThing("weddingMedia", {
+		onUploadError: (e) => {
+			if (/size|lourd|large|FileSizeMismatch/i.test(e?.message ?? "")) {
+				sizeErrorRef.current = true;
+			}
+		},
+	});
+
 	const fetchGallery = useCallback(async () => {
 		try {
 			const res = await fetch("/api/photos", { cache: "no-store" });
@@ -81,13 +92,18 @@ export default function Photos() {
 		setUploading(true);
 		setUploadTotal(files.length);
 		setUploadDone(0);
+		sizeErrorRef.current = false;
 		let failed = 0;
-		let sawSizeError = false;
 
-		const noteError = (e: unknown) => {
-			failed += 1;
-			const msg = e instanceof Error ? e.message : String(e);
-			if (/size|lourd|large|FileSizeMismatch/i.test(msg)) sawSizeError = true;
+		// startUpload resolves with the uploaded data on success, or undefined on
+		// failure (and fires onUploadError) — so we can trust the real outcome.
+		const tryUpload = async (chunk: File[]) => {
+			try {
+				const res = await startUpload(chunk);
+				return Array.isArray(res) && res.length === chunk.length;
+			} catch {
+				return false;
+			}
 		};
 
 		try {
@@ -96,18 +112,12 @@ export default function Photos() {
 			// video) doesn't sink the good ones around it.
 			for (let i = 0; i < files.length; i += UPLOAD_BATCH) {
 				const chunk = files.slice(i, i + UPLOAD_BATCH);
-				try {
-					await uploadFiles("weddingMedia", { files: chunk });
+				if (await tryUpload(chunk)) {
 					setUploadDone((done) => done + chunk.length);
-				} catch {
+				} else {
 					for (const file of chunk) {
-						try {
-							await uploadFiles("weddingMedia", { files: [file] });
-						} catch (e) {
-							noteError(e);
-						} finally {
-							setUploadDone((done) => done + 1);
-						}
+						if (!(await tryUpload([file]))) failed += 1;
+						setUploadDone((done) => done + 1);
 					}
 				}
 			}
@@ -122,12 +132,14 @@ export default function Photos() {
 			} else if (added > 0) {
 				toast.warning(
 					`${added} ajoutée(s), ${failed} échouée(s). ${
-						sawSizeError ? whatsapp : "Réessayez les manquantes."
+						sizeErrorRef.current ? whatsapp : "Réessayez les manquantes."
 					}`,
 				);
 			} else {
 				toast.error(
-					sawSizeError ? `Envoi impossible. ${whatsapp}` : "L'envoi a échoué. Réessayez.",
+					sizeErrorRef.current
+						? `Envoi impossible. ${whatsapp}`
+						: "L'envoi a échoué. Réessayez.",
 				);
 			}
 		} finally {
