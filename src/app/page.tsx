@@ -16,7 +16,8 @@ import Rencontre from "@/components/global/sections/rencontre/Rencontre";
 import Navbar from "@/components/global/navbar/Navbar";
 import { parseAsBoolean, useQueryState } from "nuqs";
 
-export default function OnePage() {
+// useQueryState() lit useSearchParams() : doit vivre sous un <Suspense>.
+function OnePageContent() {
 	const [showSplash, setShowSplash] = useState(true);
 	// "Montrer les évènements passés" — piloté par le switch de la navbar
 	const [showPast] = useQueryState("passe", parseAsBoolean);
@@ -48,9 +49,7 @@ export default function OnePage() {
 
 	return (
 		<>
-			<Suspense fallback={<div>Loading...</div>}>
-				<Navbar />
-			</Suspense>
+			<Navbar />
 			<main className="flex flex-col items-center md:items-start max-w-screen">
 				<Splash
 					className={cn(
@@ -83,5 +82,13 @@ export default function OnePage() {
 				<Photos />
 			</main>
 		</>
+	);
+}
+
+export default function OnePage() {
+	return (
+		<Suspense fallback={<div>Loading...</div>}>
+			<OnePageContent />
+		</Suspense>
 	);
 }
