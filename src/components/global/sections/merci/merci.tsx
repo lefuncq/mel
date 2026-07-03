@@ -29,7 +29,7 @@ function Merci() {
 				</div>
 				<Ampersand className="w-10 h-10 fill-foreground" />
 				<h3 className="inline-block w-fit text-3xl text-center">
-					Sont heureux de vous convier au mariage de leurs enfants
+					Sont heureux de vous avoir conviés au mariage de leurs enfants
 				</h3>
 				<h1
 					className={cn(

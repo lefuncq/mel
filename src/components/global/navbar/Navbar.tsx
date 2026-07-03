@@ -10,6 +10,7 @@ import {
 	NavigationMenuItem,
 	NavigationMenuLink,
 } from "@/components/ui/navigation-menu";
+import { Switch } from "@/components/ui/switch";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
@@ -28,6 +29,8 @@ function Navbar() {
 	const pathname = usePathname();
 	const isPhotos = pathname === "/photos";
 	const [isNotMairie] = useQueryState("nm", parseAsBoolean);
+	// "Montrer les évènements passés" — révèle les sections masquées
+	const [showPast, setShowPast] = useQueryState("passe", parseAsBoolean);
 
 	// lock/unlock scroll
 	useEffect(() => {
@@ -159,8 +162,8 @@ function Navbar() {
 									<span className="leading-[20px]">Accueil</span>
 								</NavigationMenuLink>
 							</NavigationMenuItem>
-							{/* Mairie masquée — réactiver en retirant "false &&" */}
-							{false && !isNotMairie && (
+							{/* Mairie — visible via "Montrer les évènements passés" */}
+							{showPast && !isNotMairie && (
 								<NavigationMenuItem
 									className={cn(
 										"transition-all duration-500 ease-out",
@@ -192,54 +195,82 @@ function Navbar() {
 								<NavigationMenuLink
 									onSelect={() => {
 										setIsOpen(false);
-										scrollToSection("welcome-party");
+										scrollToSection("rencontre");
 									}}
 									className="cursor-pointer flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
 								>
 									<Flower className="size-7 text-foreground stroke-1" />
-									<span className="leading-[15px]">Welcome Party</span>
+									<span className="leading-[15px]">La Rencontre</span>
 								</NavigationMenuLink>
 							</NavigationMenuItem>
-							<NavigationMenuItem
-								className={cn(
-									"transition-all duration-500 ease-out",
-									isOpen
-										? "translate-y-0 opacity-100"
-										: "translate-y-12 opacity-0",
-								)}
-							>
-								<NavigationMenuLink
-									onSelect={() => {
-										setIsOpen(false);
-										scrollToSection("soiree");
-									}}
-									className="cursor-pointer flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
+							{/* Welcome Party — visible via "Montrer les évènements passés" */}
+							{showPast && (
+								<NavigationMenuItem
+									className={cn(
+										"transition-all duration-500 ease-out",
+										isOpen
+											? "translate-y-0 opacity-100"
+											: "translate-y-12 opacity-0",
+									)}
 								>
-									<Flower className="size-7 text-foreground stroke-1" />
-									<span className="leading-[15px]">Soirée</span>
-								</NavigationMenuLink>
-							</NavigationMenuItem>
-							<NavigationMenuItem
-								className={cn(
-									"transition-all duration-500 ease-out",
-									isOpen
-										? "translate-y-0 opacity-100"
-										: "translate-y-12 opacity-0",
-								)}
-							>
-								<NavigationMenuLink
-									onSelect={() => {
-										setIsOpen(false);
-										scrollToSection("sejour");
-									}}
-									className="cursor-pointer flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
+									<NavigationMenuLink
+										onSelect={() => {
+											setIsOpen(false);
+											scrollToSection("welcome-party");
+										}}
+										className="cursor-pointer flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
+									>
+										<Flower className="size-7 text-foreground stroke-1" />
+										<span className="leading-[15px]">Welcome Party</span>
+									</NavigationMenuLink>
+								</NavigationMenuItem>
+							)}
+							{/* Soirée — visible via "Montrer les évènements passés" */}
+							{showPast && (
+								<NavigationMenuItem
+									className={cn(
+										"transition-all duration-500 ease-out",
+										isOpen
+											? "translate-y-0 opacity-100"
+											: "translate-y-12 opacity-0",
+									)}
 								>
-									<Flower className="size-7 text-foreground stroke-1" />
-									<span className="leading-[15px]">Votre Séjour</span>
-								</NavigationMenuLink>
-							</NavigationMenuItem>
-							{/* RSVP masqué — réactiver en retirant "false &&" */}
-							{false && (
+									<NavigationMenuLink
+										onSelect={() => {
+											setIsOpen(false);
+											scrollToSection("soiree");
+										}}
+										className="cursor-pointer flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
+									>
+										<Flower className="size-7 text-foreground stroke-1" />
+										<span className="leading-[15px]">Soirée</span>
+									</NavigationMenuLink>
+								</NavigationMenuItem>
+							)}
+							{/* Séjour — visible via "Montrer les évènements passés" */}
+							{showPast && (
+								<NavigationMenuItem
+									className={cn(
+										"transition-all duration-500 ease-out",
+										isOpen
+											? "translate-y-0 opacity-100"
+											: "translate-y-12 opacity-0",
+									)}
+								>
+									<NavigationMenuLink
+										onSelect={() => {
+											setIsOpen(false);
+											scrollToSection("sejour");
+										}}
+										className="cursor-pointer flex duration-150 ease-out flex-row items-end gap-2 text-foreground"
+									>
+										<Flower className="size-7 text-foreground stroke-1" />
+										<span className="leading-[15px]">Votre Séjour</span>
+									</NavigationMenuLink>
+								</NavigationMenuItem>
+							)}
+							{/* RSVP — visible via "Montrer les évènements passés" */}
+							{showPast && (
 								<NavigationMenuItem
 									className={cn(
 										"transition-all duration-500 ease-out",
@@ -278,6 +309,27 @@ function Navbar() {
 									<Flower className="size-7 text-foreground stroke-1" />
 									<span className="leading-[15px]">Gallerie Photos</span>
 								</NavigationMenuLink>
+							</NavigationMenuItem>
+							<NavigationMenuItem
+								className={cn(
+									"mt-6 transition-all duration-500 ease-out",
+									isOpen
+										? "translate-y-0 opacity-100"
+										: "translate-y-12 opacity-0",
+								)}
+							>
+								<label className="cursor-pointer flex flex-row items-center gap-3 text-foreground">
+									<Switch
+										checked={!!showPast}
+										onCheckedChange={(checked) =>
+											setShowPast(checked ? true : null)
+										}
+										className="data-[state=checked]:bg-accent"
+									/>
+									<span className="font-sans text-md font-medium leading-[15px]">
+										Montrer les évènements passés
+									</span>
+								</label>
 							</NavigationMenuItem>
 						</NavigationMenuList>
 					</NavigationMenu>

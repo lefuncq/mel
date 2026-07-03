@@ -55,7 +55,7 @@ export default function RSVP() {
 	const [welcomePartyNumber, setWelcomePartyNumber] = useState(0);
 	const [soireeNumber, setSoireeNumber] = useState(0);
 	const [address, setAddress] = useState("");
-	const [captchaSolved, setCaptchaSolved] = useState(false);
+	const [, setCaptchaSolved] = useState(false);
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
@@ -193,7 +193,7 @@ export default function RSVP() {
 							setCaptchaSolved(true);
 						}}
 					/>
-					<Button type="submit" disabled={!captchaSolved}>
+					<Button type="submit" disabled>
 						<ArrowRight className="size-4" /> Envoyer
 					</Button>
 				</form>

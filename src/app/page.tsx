@@ -11,10 +11,15 @@ import Splash from "@/components/global/sections/Splash/Splash";
 import RSVP from "@/components/global/sections/rsvp/RSVP";
 import { cn } from "@/lib/utils";
 import Photos from "@/components/global/sections/photos/Photos";
+import ThankYou from "@/components/global/sections/thankyou/ThankYou";
+import Rencontre from "@/components/global/sections/rencontre/Rencontre";
 import Navbar from "@/components/global/navbar/Navbar";
+import { parseAsBoolean, useQueryState } from "nuqs";
 
 export default function OnePage() {
 	const [showSplash, setShowSplash] = useState(true);
+	// "Montrer les évènements passés" — piloté par le switch de la navbar
+	const [showPast] = useQueryState("passe", parseAsBoolean);
 	const videoRef = useRef<HTMLVideoElement>(null);
 
 	const handleEnter = () => {
@@ -56,20 +61,21 @@ export default function OnePage() {
 				/>
 
 				{/* Video section */}
-				<Home videoRef={videoRef} />
+				<Home videoRef={videoRef} showPast={!!showPast} />
 
 				<Merci />
-				{/* Mairie masquée — réactiver en retirant "false &&" */}
-				{false && (
+				<ThankYou />
+				<Rencontre />
+				{/* Évènements passés — affichés via le switch "Montrer les évènements passés" */}
+				{showPast && (
 					<Suspense fallback={<div>Loading...</div>}>
 						<Mairie />
 					</Suspense>
 				)}
-				<WelcomeParty />
-				<Soiree />
-				<Sejour />
-				{/* RSVP masqué — réactiver en retirant "false &&" */}
-				{false && (
+				{showPast && <WelcomeParty />}
+				{showPast && <Soiree />}
+				{showPast && <Sejour />}
+				{showPast && (
 					<Suspense fallback={<div>Loading...</div>}>
 						<RSVP />
 					</Suspense>

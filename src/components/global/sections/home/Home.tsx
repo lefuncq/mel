@@ -6,8 +6,10 @@ import { type RefObject } from "react";
 
 export default function Home({
 	videoRef,
+	showPast,
 }: {
 	videoRef: RefObject<HTMLVideoElement | null>;
+	showPast: boolean;
 }) {
 	return (
 		<section
@@ -49,7 +51,8 @@ export default function Home({
 									</h1>
 								</div>
 								<h3 className="text-3xl font-bold max-w-md">
-									Sont heureux de vous convier au mariage de leurs enfants
+									Sont heureux de vous avoir conviés au mariage de leurs
+									enfants
 								</h3>
 								<h1 className="text-6xl font-bold max-w-md">
 									<strong className="bg-pink-100">Melissa et Théo</strong>
@@ -57,16 +60,19 @@ export default function Home({
 							</div>
 						</div>
 						<Button variant="outline" className="mt-10">
-							<Link href="#mairie" className="flex items-center gap-2">
+							<Link href="#photos" className="flex items-center gap-2">
 								<ArrowRight className="w-4 h-4" />
-								Cliquez ici pour les détails
+								Voir les souvenirs
 							</Link>
 						</Button>
 					</div>
 				</div>
 
 				<div className="w-full h-svh md:h-full pointer-events-none absolute top-0 left-0 right-0 flex justify-center items-end pb-10">
-					<Link href="#mairie" className="scroll-indicator h-10">
+					<Link
+						href={showPast ? "#mairie" : "#thankyou"}
+						className="scroll-indicator h-10"
+					>
 						<span className="!border-white md:!border-foreground"></span>
 						<span className="!border-white md:!border-foreground"></span>
 						<span className="!border-white md:!border-foreground"></span>
