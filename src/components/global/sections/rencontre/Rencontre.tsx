@@ -22,14 +22,13 @@ export default function Rencontre() {
 				>
 					La Rencontre
 				</h1>
-				<div className="w-full max-w-[600px] flex items-center justify-center">
-					{/** biome-ignore lint/a11y/useMediaCaption: wedding video */}
-					<video
-						src="https://jsqbvimr6o.ufs.sh/f/y4gNqH1U0qENkc5GlR1MHOGdDPRm75bQe4p3fcB6VMkFjoUi"
-						playsInline
-						controls
-						preload="metadata"
-						className="w-full h-auto object-cover rounded-4xl shadow-[0px_4px_100px_0px] shadow-pink-300"
+				<div className="w-full max-w-[800px] flex items-center justify-center">
+					<iframe
+						src="https://www.youtube.com/embed/Y2_fG42xGMc"
+						title="La Rencontre"
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+						allowFullScreen
+						className="w-full aspect-video rounded-4xl shadow-[0px_4px_100px_0px] shadow-pink-300"
 					/>
 				</div>
 			</div>
